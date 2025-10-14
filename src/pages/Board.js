@@ -1,6 +1,30 @@
+import { useEffect, useState } from "react";
 import "./Board.css";
+import api from "../api/axiosConfig";
 
-function Board() {
+function Board({ user }) {
+  const [posts, setPosts] = useState([]);
+
+  //게시판 모든글 요청
+  const laodPosts = async () => {
+    try {
+      const res = await api.get("/api/board"); //모든 게시글 가져오기 요청
+      setPosts(res.data); // posts -> 전체 게시글 -> 게시글의 배열
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    laodPosts();
+  }, []);
+
+  //날짜 format 함수
+  const formatDate = (dateString) => {
+    //const date = new Date(dateString);
+    return dateString;
+  };
+
   return (
     <div className="container">
       <h1>게시판</h1>
@@ -14,10 +38,23 @@ function Board() {
           </tr>
         </thead>
         <tbody>
-          <td>1</td>
-          <td>안녕하세요 첫글 입니다.</td>
-          <td>tiger</td>
-          <td>2025-10-14</td>
+          {posts.length > 0 ? (
+            posts
+              .slice() //얕은 복사
+              .reverse() // 최신글이 위로 오게
+              .map((p, index) => (
+                <tr key={p.id}>
+                  <td>{posts.length - index}</td>
+                  <td>{p.title}</td>
+                  <td>{p.author.username}</td>
+                  <td>{p.createDate}</td>
+                </tr>
+              ))
+          ) : (
+            <tr>
+              <td colSpan="4">게시물이 없습니다.</td>
+            </tr>
+          )}
         </tbody>
       </table>
       <div className="write-button-container">
