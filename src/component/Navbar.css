@@ -1,8 +1,8 @@
 /* 네비게이션 바 */
 
 .navbar {
-  background-color: #93c7f5;
-  color: white;
+  background-color: beige;
+  color: rgb(27, 27, 27);
   padding: 12px 24px;
   display: flex;
   justify-content: space-between;
@@ -21,7 +21,7 @@
   border: none;
   cursor: pointer;
   font-size: 14px;
-  color: white;
+  color: rgb(32, 32, 32);
   margin-left: 16px;
 }
 
