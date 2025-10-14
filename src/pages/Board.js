@@ -1,3 +1,5 @@
+import "./Board.css";
+
 function Board() {
   return (
     <div className="container">
@@ -11,8 +13,16 @@ function Board() {
             <th>작성일</th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+          <td>1</td>
+          <td>안녕하세요 첫글 입니다.</td>
+          <td>tiger</td>
+          <td>2025-10-14</td>
+        </tbody>
       </table>
+      <div className="write-button-container">
+        <button className="write-button">글쓰기</button>
+      </div>
     </div>
   );
 }
