@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import "./Board.css";
 import api from "../api/axiosConfig";
+import { useNavigate } from "react-router-dom";
+import "./BoardWrite.css";
 
 function Board({ user }) {
   const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
 
   //게시판 모든글 요청
   const laodPosts = async () => {
@@ -15,6 +18,16 @@ function Board({ user }) {
     }
   };
 
+  const handleWrite = () => {
+    //로그인한 유저만 글쓰기 허용
+    if (!user) {
+      //참이면 로그인하지 않은 경우
+      alert("로그인 후 글 작성이 가능합니다.");
+      return;
+    }
+    navigate("/board/write");
+  };
+
   useEffect(() => {
     laodPosts();
   }, []);
@@ -22,7 +35,7 @@ function Board({ user }) {
   //날짜 format 함수
   const formatDate = (dateString) => {
     //const date = new Date(dateString);
-    return dateString;
+    return dateString.substring(0, 10);
   };
 
   return (
@@ -47,7 +60,7 @@ function Board({ user }) {
                   <td>{posts.length - index}</td>
                   <td>{p.title}</td>
                   <td>{p.author.username}</td>
-                  <td>{p.createDate}</td>
+                  <td>{formatDate(p.createDate)}</td>
                 </tr>
               ))
           ) : (
@@ -58,7 +71,9 @@ function Board({ user }) {
         </tbody>
       </table>
       <div className="write-button-container">
-        <button className="write-button">글쓰기</button>
+        <button onClick={handleWrite} className="write-button">
+          글쓰기
+        </button>
       </div>
     </div>
   );

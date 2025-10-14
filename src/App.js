@@ -39,8 +39,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login onLogin={setUser} />} />
         <Route path="/board" element={<Board user={user} />} />
-        <Route path="/board/write" element={<BoardWrite />} />
-        <Route path="/board/:id" element={<BoardDetail />} />
+        <Route path="/board/write" element={<BoardWrite user={user} />} />
+        <Route path="/board/:id" element={<BoardDetail user={user} />} />
       </Routes>
     </div>
   );
