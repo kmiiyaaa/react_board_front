@@ -13,7 +13,7 @@ function Board({ user }) {
   //게시판 모든글 요청
   const laodPosts = async () => {
     try {
-      setLoading(true);
+      setLoading(true); // 이게 없으면 로딩 다 하기전에 찍어서 오류남
       const res = await api.get("/api/board"); //모든 게시글 가져오기 요청
       setPosts(res.data); // posts -> 전체 게시글 -> 게시글의 배열
     } catch (err) {
@@ -68,7 +68,12 @@ function Board({ user }) {
               .map((p, index) => (
                 <tr key={p.id}>
                   <td>{posts.length - index}</td>
-                  <td>{p.title}</td>
+                  <td
+                    className="click-title"
+                    onClick={() => navigate(`/board/${p.id}`)}
+                  >
+                    {p.title}
+                  </td>
                   <td>{p.author.username}</td>
                   <td>{formatDate(p.createDate)}</td>
                 </tr>

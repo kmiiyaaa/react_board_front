@@ -43,7 +43,18 @@ h2 {
   cursor: pointer;
 }
 
-.write-hover {
+.write-hover:hover {
   background-color: rgb(222, 255, 183);
   color: white;
+}
+
+.click-title {
+  cursor: pointer;
+  color: rgb(110, 145, 128);
+  font-weight: bold;
+}
+
+.click-title:hover {
+  text-decoration: underline;
+  color: rgb(253, 187, 106);
 }
