@@ -32,3 +32,15 @@
   white-space: pre-wrap; /* 줄바꿈 유지 */
   line-height: 1.5;
 }
+
+.list-button:hover {
+  background-color: rgb(250, 157, 113);
+}
+
+.delete-button:hover {
+  background-color: rgb(209, 131, 108);
+}
+
+.edit-button:hover {
+  background-color: rgb(81, 62, 253);
+}
