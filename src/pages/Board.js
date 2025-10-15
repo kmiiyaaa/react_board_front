@@ -109,24 +109,42 @@ function Board({ user }) {
         </tbody>
       </table>
 
-      {/* 페이지 번호와 이동화살표 출력 */}
+      {/* 페이지 번호와 이동 화살표 출력 */}
       <div className="pagination">
+        {/* 첫번째 페이지로 이동  */}
+        <button onClick={() => setCurrentPage(0)} disabled={currentPage === 0}>
+          ◀◀
+        </button>
         <button
           onClick={() => setCurrentPage(currentPage - 1)}
           disabled={currentPage === 0}
         >
           ◀
         </button>
+
+        {/* 페이지 번호 그룹 10개씩 출력 */}
         {getPageNumbers().map((num) => (
-          <button key={num} onClick={() => setCurrentPage(num)}>
+          <button
+            className={num === currentPage ? "active" : ""}
+            key={num}
+            onClick={() => setCurrentPage(num)}
+          >
             {num + 1}
-          </button> //loadPosts(num)넣으면 무한루프 된다.
+          </button>
         ))}
+
         <button
           onClick={() => setCurrentPage(currentPage + 1)}
           disabled={currentPage === totalPages - 1 || totalPages === 0}
         >
           ▶
+        </button>
+        {/* 마지막 페이지로 이동 */}
+        <button
+          onClick={() => setCurrentPage(totalPages - 1)}
+          disabled={currentPage === totalPages - 1 || totalPages === 0}
+        >
+          ▶▶
         </button>
       </div>
 
