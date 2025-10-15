@@ -81,9 +81,24 @@ function BoardDetail({ user }) {
 
   //댓글 관련 이벤트 처리
 
-  const [newComment, setNewComment] = useState("");
+  const [newComment, setNewComment] = useState(""); // 새로운 댓글 저장 변수
+  const [comments, setComments] = useState([]); // 백엔드에서 가져온 기존 댓글 배열
+  const [editCommentContent, setEditCommentContent] = useState("");
+  const [editCommentId, setEditCommentId] = useState(null);
 
+  //날짜 format 함수 -> 날짜,시간 출력
+  const formatDate = (dateString) => {
+    return dateString.substring(0, 10);
+  };
+
+  //댓글 제출 함수
   const handleCommentSubmit = () => {};
+
+  //댓글 삭제 함수
+  const handleCommentDelete = (commentId) => {};
+
+  //댓글 수정 이벤트 함수
+  const handleCommentUpdate = () => {};
 
   if (loading) return <p>게시글 로딩 중....</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -157,6 +172,47 @@ function BoardDetail({ user }) {
                 등록
               </button>
             </form>
+
+            {/*기존 댓글 리스트 시작 */}
+            <ul className="comment-list">
+              {comments.map((c) => (
+                <li key={c.id} className="comment-item">
+                  <div className="comment-header">
+                    <sapn className="comment-author">{c.author.username}</sapn>
+                    <span className="comment-date">
+                      {formatDate(c.createDate)}
+                    </span>
+                    <div className="button-group">
+                      <button
+                        className="list-button"
+                        onClick={() => navigate("/board")}
+                      >
+                        글목록
+                      </button>
+
+                      {/* 로그인한 유저 본인이 쓴 댓글만 삭제 수정 가능 */}
+                      {user === c.author.username && (
+                        <>
+                          <button
+                            className="edit-button"
+                            onClick={() => handleCommentUpdate(c)}
+                          >
+                            수정
+                          </button>
+                          <button
+                            className="delete-button"
+                            onClick={handleCommentDelete(c.id)}
+                          >
+                            삭제
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  <div className="comment-content">{c.content}</div>
+                </li>
+              ))}
+            </ul>
           </div>
           {/* 댓글영역 끝 */}
         </>
