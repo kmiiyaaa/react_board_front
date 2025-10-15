@@ -8,9 +8,9 @@ function Board({ user }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalItems, setTotalItems] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0); //현재 페이지 번호
+  const [totalPages, setTotalPages] = useState(0); //모든 페이지 갯수
+  const [totalItems, setTotalItems] = useState(0); //모든 글 갯수
   const navigate = useNavigate();
 
   //페이징된 게시판 모든글 요청
@@ -87,10 +87,9 @@ function Board({ user }) {
           {posts.length > 0 ? (
             posts
               .slice() //얕은 복사
-              .reverse() // 최신글이 위로 오게
               .map((p, index) => (
                 <tr key={p.id}>
-                  <td>{posts.length - index}</td>
+                  <td>{totalItems - (index + currentPage * 10)}</td>
                   <td
                     className="click-title"
                     onClick={() => navigate(`/board/${p.id}`)}
