@@ -173,48 +173,50 @@ function BoardDetail({ user }) {
               </button>
             </form>
 
-            {/*기존 댓글 리스트 시작 */}
+            {/* 기존 댓글 리스트 시작! */}
             <ul className="comment-list">
               {comments.map((c) => (
                 <li key={c.id} className="comment-item">
                   <div className="comment-header">
-                    <sapn className="comment-author">{c.author.username}</sapn>
+                    <span className="comment-author">{c.author.username}</span>
                     <span className="comment-date">
                       {formatDate(c.createDate)}
                     </span>
-                    <div className="button-group">
-                      <button
-                        className="list-button"
-                        onClick={() => navigate("/board")}
-                      >
-                        글목록
-                      </button>
-
-                      {/* 로그인한 유저 본인이 쓴 댓글만 삭제 수정 가능 */}
-                      {user === c.author.username && (
-                        <>
-                          <button
-                            className="edit-button"
-                            onClick={() => handleCommentUpdate(c)}
-                          >
-                            수정
-                          </button>
-                          <button
-                            className="delete-button"
-                            onClick={handleCommentDelete(c.id)}
-                          >
-                            삭제
-                          </button>
-                        </>
-                      )}
-                    </div>
                   </div>
+
                   <div className="comment-content">{c.content}</div>
+                  <div className="button-group">
+                    <button
+                      className="list-button"
+                      onClick={() => navigate("/board")}
+                    >
+                      글목록
+                    </button>
+
+                    {/* 로그인한 유저 본인이 쓴글만 삭제 수정 가능 */}
+                    {user === c.author.username && (
+                      <>
+                        <button
+                          className="edit-button"
+                          onClick={() => handleCommentUpdate(c)}
+                        >
+                          수정
+                        </button>
+                        <button
+                          className="delete-button"
+                          onClick={handleCommentDelete(c.id)}
+                        >
+                          삭제
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>
+            {/* 기존 댓글 리스트 끝! */}
           </div>
-          {/* 댓글영역 끝 */}
+          {/* 댓글 영역 끝! */}
         </>
       )}
     </div>
