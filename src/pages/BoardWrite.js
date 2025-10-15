@@ -6,10 +6,12 @@ import "./BoardWrite.css";
 function BoardWrite({ user }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault(); //페이지 새로고침 방지
+    setErrors({});
 
     //로그인한 유저만 글쓰기 허용
     if (!user) {
@@ -23,7 +25,12 @@ function BoardWrite({ user }) {
       alert("글작성 성공");
       navigate("/board");
     } catch (err) {
-      console.error(err);
+      if (err.response && err.response.status == 400) {
+        setErrors(err.response.data);
+      } else {
+        console.error(err);
+        alert("글쓰기 실패!");
+      }
     }
   };
 
@@ -42,6 +49,8 @@ function BoardWrite({ user }) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
+        {errors.title && <p style={{ color: "red" }}>{errors.title}</p>}
+        {errors.content && <p style={{ color: "red" }}>{errors.content}</p>}
         <div className="button-group">
           <button type="submit">등록</button>
           <button type="button" onClick={() => navigate("/board")}>

@@ -8,14 +8,21 @@ function Board({ user }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   const navigate = useNavigate();
 
-  //게시판 모든글 요청
-  const laodPosts = async () => {
+  //페이징된 게시판 모든글 요청
+  const laodPosts = async (page = 0) => {
     try {
       setLoading(true); // 이게 없으면 로딩 다 하기전에 찍어서 오류남
-      const res = await api.get("/api/board"); //모든 게시글 가져오기 요청
-      setPosts(res.data); // posts -> 전체 게시글 -> 게시글의 배열
+      const res = await api.get(`/api/board?page=${page}&size=10`); //모든 게시글 가져오기 요청
+      setPosts(res.data.posts); // posts -> 전체 게시글 -> 게시글의 배열
+      //res안(posts,currentPage,...)에 있는 posts빼줘야한다
+      setCurrentPage(res.data.currentPage); //현재 페이지
+      setTotalPages(res.data.totalPages); //전체 페이지
+      setTotalItems(res.data.totalItems); //모든글 갯수
     } catch (err) {
       console.error(err);
       setError("게시글을 불러오는 데 실패하였습니다.");
@@ -36,8 +43,24 @@ function Board({ user }) {
   };
 
   useEffect(() => {
-    laodPosts();
-  }, []);
+    laodPosts(currentPage);
+  }, [currentPage]); // 원래 0이었다가 페이지 바뀌면 재로딩
+
+  // 페이지 번호 그룹 배열 반환 함수 (10개 까지만 표시)
+  // ex) 총페이지 수 : 157개글 -> 총 16페이지 필요 -> [0,2,3,4,5,..,9]
+  // ▶ -> [10,12,..,16]
+  const getPageNumbers = () => {
+    const startPage = Math.floor(currentPage / 10) * 10;
+    //0 1 2 3 4  -> 5 6 7 8 9 : 5개씩 자른다하면 Math.floor(currentPage / 5) * 5;
+    const endPage = startPage + 10 > totalPages ? totalPages : startPage + 10;
+    //마지막 페이지 번호가 계산된 endpage값보다 작을 경우 마지막 페이지를 endpage값으로 변경하여
+    // 마지막 페이지 까지만 페이지 그룹이 출력되도록
+    const pages = [];
+    for (let i = startPage; i < endPage; i++) {
+      pages.push(i);
+    }
+    return pages;
+  };
 
   //날짜 format 함수
   const formatDate = (dateString) => {
@@ -85,6 +108,18 @@ function Board({ user }) {
           )}
         </tbody>
       </table>
+
+      {/* 페이지 번호와 이동화살표 출력 */}
+      <div className="pagination">
+        <button>◀</button> {/* < 쓰려면 &lt; 적으면 된다 */}
+        {getPageNumbers().map((num) => (
+          <button key={num} onClick={() => setCurrentPage(num)}>
+            {num + 1}
+          </button> //loadPosts(num)넣으면 무한루프 된다.
+        ))}
+        <button>▶</button>
+      </div>
+
       <div className="write-button-container">
         <button onClick={handleWrite} className="write-button">
           글쓰기
