@@ -4,6 +4,7 @@ import api from "../api/axiosConfig";
 import "./BoardDetail.css";
 
 function BoardDetail({ user }) {
+  // props user -> 현재 로그인한 사용자의 username
   const navigate = useNavigate();
 
   const [post, setPost] = useState(null); //해당 글 id로 요청한 글 객체 -> 객체라서 "" 안되고 null 넣어줘야한다
@@ -36,7 +37,8 @@ function BoardDetail({ user }) {
   };
 
   useEffect(() => {
-    loadPost();
+    loadPost(); //게시글 다시 불러오기
+    laodComments(); //게시글에 달린 댓글 리스트 다시 불러오기
   }, [id]);
 
   //글삭제
@@ -85,20 +87,55 @@ function BoardDetail({ user }) {
   const [comments, setComments] = useState([]); // 백엔드에서 가져온 기존 댓글 배열
   const [editCommentContent, setEditCommentContent] = useState("");
   const [editCommentId, setEditCommentId] = useState(null);
+  const [commentErrors, setCommentErrors] = useState({});
 
   //날짜 format 함수 -> 날짜,시간 출력
   const formatDate = (dateString) => {
     return dateString.substring(0, 10);
   };
 
-  //댓글 제출 함수
-  const handleCommentSubmit = () => {};
+  //댓글 제출 함수 -> 원 게시글 id를 파라미터로 제출
+  const handleCommentSubmit = async (e) => {
+    // 백엔드에 댓글 저장 요청
+    e.preventDefault(); //초기화 방지
+    if (!newComment) {
+      alert("댓글 내용을 입력해주세요.");
+      return;
+    }
+
+    try {
+      await api.post(`/api/comments/${id}`, { contnet: newComment }); //여기서 id는 원게시글의 id
+      setNewComment("");
+      //댓글 리스트 불러오기 호출
+      laodComments(); //새 댓글 기존 댓글 리스트에 반영
+    } catch (err) {
+      console.error(err);
+      alert("댓글 등록 실패");
+    }
+  };
+
+  //댓글 리스트 불러오기 함수
+  const laodComments = async () => {
+    try {
+      const res = await api.get(`/api/comments/${id}`);
+      //res -> 댓글 리스트 저장  (ex: 7번글에 달린 댓글4개 리스트)
+      setComments(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("댓글 리스트 불러오기 실패");
+    }
+  };
 
   //댓글 삭제 함수
   const handleCommentDelete = (commentId) => {};
 
-  //댓글 수정 이벤트 함수
-  const handleCommentUpdate = () => {};
+  //댓글 수정 이벤트 함수 -> 백엔드 수정 요청
+  const handleCommentUpdate = (commentId) => {};
+
+  //댓글 수정 여부 확인
+  const handleCommentEdit = (comment) => {
+    setEditCommentId(comment.id);
+  };
 
   if (loading) return <p>게시글 로딩 중....</p>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -167,7 +204,10 @@ function BoardDetail({ user }) {
                 placeholder="댓글을 입력하세요"
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-              ></textarea>
+              />
+              {commentErrors.content && (
+                <p style={{ color: "red" }}>{commentErrors.content}</p>
+              )}
               <button type="submit" className="comment-button">
                 등록
               </button>
@@ -184,33 +224,54 @@ function BoardDetail({ user }) {
                     </span>
                   </div>
 
-                  <div className="comment-content">{c.content}</div>
-                  <div className="button-group">
-                    <button
-                      className="list-button"
-                      onClick={() => navigate("/board")}
-                    >
-                      글목록
-                    </button>
+                  {editCommentId === c.id ? (
+                    /* 댓글 수정 섹션 */
+                    <>
+                      <textarea
+                        value={editCommentContent}
+                        onChange={(e) => setEditCommentContent(e.target.value)}
+                      />
+                      <button
+                        className="comment-save"
+                        onClick={handleCommentEdit(c)}
+                      >
+                        저장
+                      </button>
+                      <button
+                        className="comment-cancel"
+                        onClick={() => setEditCommentId(null)}
+                      >
+                        취소
+                      </button>
+                    </>
+                  ) : (
+                    /* 댓글 수정 섹션 끝 */
+                    /* 댓글 읽기 섹션 */
+                    <>
+                      <div className="comment-content">{c.content}</div>
 
-                    {/* 로그인한 유저 본인이 쓴글만 삭제 수정 가능 */}
-                    {user === c.author.username && (
-                      <>
-                        <button
-                          className="edit-button"
-                          onClick={() => handleCommentUpdate(c)}
-                        >
-                          수정
-                        </button>
-                        <button
-                          className="delete-button"
-                          onClick={handleCommentDelete(c.id)}
-                        >
-                          삭제
-                        </button>
-                      </>
-                    )}
-                  </div>
+                      <div className="button-group">
+                        {/* 로그인한 유저 본인이 쓴 댓글만 삭제 수정 가능 */}
+                        {user === c.author.username && (
+                          <>
+                            <button
+                              className="edit-button"
+                              onClick={handleCommentUpdate(c)}
+                            >
+                              수정
+                            </button>
+                            <button
+                              className="delete-button"
+                              onClick={handleCommentDelete(c.id)}
+                            >
+                              삭제
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </>
+                    /* 댓글 읽기 섹션 끝! */
+                  )}
                 </li>
               ))}
             </ul>

@@ -83,7 +83,7 @@ function Board({ user }) {
           {posts.length > 0 ? (
             posts
               .slice() //얕은 복사
-              .reverse()
+              // .reverse()
               .map((p, index) => (
                 <tr key={p.id}>
                   <td>{posts.length - index}</td>
