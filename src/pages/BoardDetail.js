@@ -38,7 +38,7 @@ function BoardDetail({ user }) {
 
   useEffect(() => {
     loadPost(); //게시글 다시 불러오기
-    laodComments(); //게시글에 달린 댓글 리스트 다시 불러오기
+    //laodComments(); //게시글에 달린 댓글 리스트 다시 불러오기
   }, [id]);
 
   //글삭제
@@ -104,13 +104,17 @@ function BoardDetail({ user }) {
     }
 
     try {
-      await api.post(`/api/comments/${id}`, { contnet: newComment }); //여기서 id는 원게시글의 id
+      await api.post(`/api/comments/${id}`, { content: newComment }); //여기서 id는 원게시글의 id
       setNewComment("");
       //댓글 리스트 불러오기 호출
       laodComments(); //새 댓글 기존 댓글 리스트에 반영
     } catch (err) {
-      console.error(err);
-      alert("댓글 등록 실패");
+      if (err.response && err.response.status === 400) {
+        setCommentErrors(err.response.data);
+      } else {
+        console.error(err);
+        alert("댓글 등록 실패!");
+      }
     }
   };
 
