@@ -38,7 +38,7 @@ function BoardDetail({ user }) {
 
   useEffect(() => {
     loadPost(); //게시글 다시 불러오기
-    laodComments(); //게시글에 달린 댓글 리스트 다시 불러오기
+    loadComments(); //게시글에 달린 댓글 리스트 다시 불러오기
   }, [id]);
 
   //글삭제
@@ -94,20 +94,26 @@ function BoardDetail({ user }) {
     return dateString.substring(0, 10);
   };
 
-  //댓글 제출 함수 -> 원 게시글 id를 파라미터로 제출
+  //댓글 쓰기 함수 -> 원 게시글 id를 파라미터로 제출
   const handleCommentSubmit = async (e) => {
     // 백엔드에 댓글 저장 요청
     e.preventDefault(); //초기화 방지
+    setCommentErrors({});
+    if (!user) {
+      alert("로그인 후 댓글 작성해주세요");
+    }
     if (!newComment) {
       alert("댓글 내용을 입력해주세요.");
       return;
     }
 
     try {
+      alert("댓글을 입력하시겠습니까?"); // 원래는 confirm 사용해야함
       await api.post(`/api/comments/${id}`, { content: newComment }); //여기서 id는 원게시글의 id
       setNewComment("");
+
       //댓글 리스트 불러오기 호출
-      laodComments(); //새 댓글 기존 댓글 리스트에 반영
+      loadComments(); //새 댓글 기존 댓글 리스트에 반영
     } catch (err) {
       if (err.response && err.response.status === 400) {
         setCommentErrors(err.response.data);
@@ -119,7 +125,7 @@ function BoardDetail({ user }) {
   };
 
   //댓글 리스트 불러오기 함수
-  const laodComments = async () => {
+  const loadComments = async () => {
     try {
       const res = await api.get(`/api/comments/${id}`);
       //res -> 댓글 리스트 저장  (ex: 7번글에 달린 댓글4개 리스트)
@@ -131,13 +137,31 @@ function BoardDetail({ user }) {
   };
 
   //댓글 삭제 함수
-  const handleCommentDelete = (commentId) => {};
+  const handleCommentDelete = async (commentId) => {
+    if (!window.confirm("정말 삭제하시겠습니까?")) {
+      return;
+    }
+    try {
+      await api.delete(`/api/comments/${commentId}`);
+      alert("댓글 삭제 성공!");
+      loadComments(); //갱신된 댓글 리스트 다시 로딩
+    } catch (err) {
+      console.error(err);
+      alert("삭제 권한이 없거나 삭제할 수 없는 댓글입니다.");
+    }
+  };
 
   //댓글 수정 이벤트 함수 -> 백엔드 수정 요청
-  const handleCommentUpdate = (commentId) => {
+  const handleCommentUpdate = async (commentId) => {
     try {
+      await api.put(`/api/comments/${commentId}`, {
+        content: editCommentContent,
+      });
+      setEditCommentId(null);
+      setEditCommentContent("");
+      loadComments();
     } catch (err) {
-      alert("댓글 수정 실패");
+      alert("댓글 수정 실패!");
     }
   };
 
@@ -145,6 +169,7 @@ function BoardDetail({ user }) {
   const handleCommentEdit = (comment) => {
     setEditCommentId(comment.id);
     setEditCommentContent(comment.content);
+    //EditingCommentContent->수정할 내용으로 저장
   };
 
   if (loading) return <p>게시글 로딩 중....</p>;
@@ -236,7 +261,7 @@ function BoardDetail({ user }) {
                   </div>
 
                   {editCommentId === c.id ? (
-                    /* 댓글 수정 섹션 */
+                    /* 댓글 수정 섹션 시작! */
                     <>
                       <textarea
                         value={editCommentContent}
@@ -244,7 +269,7 @@ function BoardDetail({ user }) {
                       />
                       <button
                         className="comment-save"
-                        onClick={() => handleCommentEdit(c)}
+                        onClick={() => handleCommentUpdate(c.id)}
                       >
                         저장
                       </button>
@@ -267,13 +292,13 @@ function BoardDetail({ user }) {
                           <>
                             <button
                               className="edit-button"
-                              onClick={() => handleCommentUpdate(c)} //콜백함수로 쓰지 않으면 리랜더링 됐을때 호출된다
+                              onClick={() => handleCommentEdit(c)}
                             >
                               수정
                             </button>
                             <button
                               className="delete-button"
-                              onClick={handleCommentDelete(c.id)}
+                              onClick={() => handleCommentDelete(c.id)}
                             >
                               삭제
                             </button>
