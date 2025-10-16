@@ -38,7 +38,7 @@ function BoardDetail({ user }) {
 
   useEffect(() => {
     loadPost(); //게시글 다시 불러오기
-    //laodComments(); //게시글에 달린 댓글 리스트 다시 불러오기
+    laodComments(); //게시글에 달린 댓글 리스트 다시 불러오기
   }, [id]);
 
   //글삭제
@@ -134,11 +134,17 @@ function BoardDetail({ user }) {
   const handleCommentDelete = (commentId) => {};
 
   //댓글 수정 이벤트 함수 -> 백엔드 수정 요청
-  const handleCommentUpdate = (commentId) => {};
+  const handleCommentUpdate = (commentId) => {
+    try {
+    } catch (err) {
+      alert("댓글 수정 실패");
+    }
+  };
 
   //댓글 수정 여부 확인
   const handleCommentEdit = (comment) => {
     setEditCommentId(comment.id);
+    setEditCommentContent(comment.content);
   };
 
   if (loading) return <p>게시글 로딩 중....</p>;
@@ -219,6 +225,7 @@ function BoardDetail({ user }) {
 
             {/* 기존 댓글 리스트 시작! */}
             <ul className="comment-list">
+              {comments.length === 0 && <p>아직 등록된 댓글이 없습니다.</p>}
               {comments.map((c) => (
                 <li key={c.id} className="comment-item">
                   <div className="comment-header">
@@ -237,7 +244,7 @@ function BoardDetail({ user }) {
                       />
                       <button
                         className="comment-save"
-                        onClick={handleCommentEdit(c)}
+                        onClick={() => handleCommentEdit(c)}
                       >
                         저장
                       </button>
@@ -260,7 +267,7 @@ function BoardDetail({ user }) {
                           <>
                             <button
                               className="edit-button"
-                              onClick={handleCommentUpdate(c)}
+                              onClick={() => handleCommentUpdate(c)} //콜백함수로 쓰지 않으면 리랜더링 됐을때 호출된다
                             >
                               수정
                             </button>
