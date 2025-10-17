@@ -44,12 +44,12 @@ function BoardWrite({ user }) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
+        {errors.title && <p style={{ color: "red" }}>{errors.title}</p>}
         <textarea
           placeholder="내용"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        {errors.title && <p style={{ color: "red" }}>{errors.title}</p>}
         {errors.content && <p style={{ color: "red" }}>{errors.content}</p>}
         <div className="button-group">
           <button type="submit">등록</button>
