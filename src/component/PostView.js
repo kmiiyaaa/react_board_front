@@ -25,12 +25,17 @@ function PoistView({ post, user, setEditing }) {
     }
   };
 
+  //날짜 format 함수 -> 날짜, 시간 출력
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString();
+  };
+
   return (
     <>
       <h2>{post.title}</h2>
-      <p className="author">작성자 : {post.author.username}</p>
+      <p className="author">작성자 : {post.author.username} </p>
+      <p className="author">작성일: {formatDate(post.createDate)} </p>
       <div className="content">{post.content}</div>
-
       <div className="button-group">
         <button className="list-button" onClick={() => navigate("/board")}>
           글목록
@@ -42,7 +47,7 @@ function PoistView({ post, user, setEditing }) {
             <button className="edit-button" onClick={() => setEditing(true)}>
               수정
             </button>
-            <button className="delete-button" onClick={() => handleDelete}>
+            <button className="delete-button" onClick={handleDelete}>
               삭제
             </button>
           </>

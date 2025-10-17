@@ -97,7 +97,7 @@ function BoardDetail({ user }) {
   //댓글 쓰기 함수 -> 원 게시글 id를 파라미터로 제출
   const handleCommentSubmit = async (e) => {
     // 백엔드에 댓글 저장 요청
-    e.preventDefault(); //초기화
+    e.preventDefault(); //초기화 방지
     setCommentErrors({});
     if (!user) {
       alert("로그인 후 댓글 작성해주세요");
