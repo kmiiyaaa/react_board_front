@@ -1,3 +1,5 @@
+import api from "../api/axiosConfig";
+
 const CommentForm({user,content}) {
     const [newComment, setNewComment] = useState(""); // 새로운 댓글 저장 변수
 

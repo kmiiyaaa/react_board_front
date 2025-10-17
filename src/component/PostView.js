@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import api from "../api/axiosConfig";
 
 function PoistView({ post, user, setEditing }) {
-  const [editing, setEditing] = useState(false);
-  const isAuthor = user && user === post.author.username; //user : 현재 로그인한 유저의 statuthor
+  //props - post -> 상세보기 화면에서 보여줄 글 객체
+  const isAuthor = user && user === post.author.username; //user : 현재 로그인한 유저
   const navigate = useNavigate();
 
   const handleDelete = async () => {
@@ -41,7 +42,7 @@ function PoistView({ post, user, setEditing }) {
             <button className="edit-button" onClick={() => setEditing(true)}>
               수정
             </button>
-            <button className="delete-button" onClick={handleDelete}>
+            <button className="delete-button" onClick={() => handleDelete}>
               삭제
             </button>
           </>
